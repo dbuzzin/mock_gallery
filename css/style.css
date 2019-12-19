@@ -40,6 +40,12 @@
     background-color: rgba(0, 0, 0, 0.9);
     z-index: 50; } }
 
+@keyframes menu {
+  0% {
+    opacity: 0; }
+  100% {
+    opacity: 1; } }
+
 html {
   box-sizing: border-box;
   font-size: 62.5%; }
@@ -187,7 +193,8 @@ time, mark, audio, video, input, textarea {
   border: 0;
   border-bottom-right-radius: 20px;
   border-top-right-radius: 20px;
-  transition: transform 0.3s; }
+  transition: transform 0.3s;
+  cursor: pointer; }
   .search__btn:focus {
     outline: none; }
   .search__btn:active {
@@ -223,7 +230,8 @@ time, mark, audio, video, input, textarea {
         justify-content: space-between; } }
 
 .nav-list__item {
-  list-style: none; }
+  list-style: none;
+  transition: all 0.7s; }
   @media (min-width: 600px) {
     .nav-list__item:not(:last-of-type) {
       margin-right: 7rem; } }
@@ -365,6 +373,9 @@ time, mark, audio, video, input, textarea {
       padding: 0;
       position: unset;
       background-color: transparent; } }
+  .social-bar > a {
+    cursor: pointer;
+    color: #ffffff; }
   .social-bar .fab {
     font-size: 1.8rem;
     transition: all 0.3s; }
@@ -531,13 +542,18 @@ main {
     height: 100%;
     width: 100%;
     flex-direction: column;
-    align-items: center; }
+    align-items: center;
+    opacity: 0; }
 
 .modal-open {
   animation: modal 0.7s 0.1s 1 both; }
+  .modal-open > * {
+    animation: menu 2s 0.1s 1 both; }
 
 .modal-close {
   animation: modal 0.7s 0.1s 1 reverse both; }
+  .modal-close > * {
+    animation: menu 0.7s 0.1s 1 reverse both; }
 
 .no-scroll {
   overflow: hidden; }
