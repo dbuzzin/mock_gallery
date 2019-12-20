@@ -31,6 +31,14 @@
 
 
 
+    // ================= Cross-Site Cookie Settings  ===================
+
+    document.cookie = "cross-site-cookie=bar; SameSite=None; Secure";
+
+
+
+
+
     // ================= Restructre Header on Resize  ==================
 
     const calcScreen = () => window.innerWidth;     // Determine screen width.
