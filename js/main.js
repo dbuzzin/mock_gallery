@@ -33,8 +33,6 @@
 
     // ================= Cross-Site Cookie Settings  ===================
 
-    document.cookie = "cross-site-cookie=bar; SameSite=None; Secure";
-
 
 
 
