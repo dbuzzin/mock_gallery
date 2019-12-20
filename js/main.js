@@ -9,17 +9,13 @@
 
 
 
-
-
     // =============== Initialise Variables & DOM Cache  ===============
 
-    const bp = {
+    const breakPoints = {
         phone   : 599,
         tabPort : 600,
         tabLand : 900
     }
-
-    let isOpen = false;
 
     let body    = document.body;
     let logo    = document.querySelector(".logo");
@@ -31,29 +27,17 @@
     let modal   = document.querySelector(".modal");
     let mInner  = document.querySelector(".modal__inner");
 
-    const calcScreen = () => window.innerWidth || window.addEventListener("resize", () => window.innerWidth);
-
-    const responsiveHeader  = () => calcScreen() <= bp.phone ? nav.insertBefore(logo, nav.firstChild) : banner.insertBefore(logo, banner.firstChild);
-    const menuInsideModal   = () => calcScreen() <= bp.phone ? mInner.appendChild(navList) : nav.insertBefore(navList, nav.firstChild);
-    const socialInsideModal = () => calcScreen() <= bp.phone ? mInner.appendChild(social) : nav.insertBefore(social, nav.firstChild);  
 
 
 
 
+    // ================= Restructre Header on Resize  ==================
 
-    // =================== Restructre DOM on Resize  ===================
+    const calcScreen = () => window.innerWidth;     // Determine screen width.
 
-    ["resize", "load"].forEach(e => window.addEventListener(e, () => {
-        responsiveHeader();
-        menuInsideModal();
-        socialInsideModal();
-    }));
-
-    window.addEventListener("resize", () => {
-        if(calcScreen() >= bp.tabPort && isOpen) {
-            closeMenu(menuBtn);
-        }
-    });
+    const responsiveHeader  = () => calcScreen() <= breakPoints.phone ? nav.insertBefore(logo, nav.firstChild) : banner.insertBefore(logo, banner.firstChild);      // Move logo into nav bar when using phone.
+    const menuInsideModal   = () => calcScreen() <= breakPoints.phone ? mInner.appendChild(navList) : nav.insertBefore(navList, nav.firstChild);                    // Move navigation inside of modal when using phone.
+    const socialInsideModal = () => calcScreen() <= breakPoints.phone ? mInner.appendChild(social) : nav.insertBefore(social, nav.firstChild);                      // Move social media icons into modal when using phone.
 
 
 
@@ -61,22 +45,53 @@
 
     // =================== Menu Open/Close Functions  ==================
 
-    const menuTransition = (el, rmClass, addClass) => {
-        el.classList.remove(rmClass);
-        void el.offsetWidth;
-        el.classList.add(addClass);
+    class Menu {
+
+        constructor(menuBtnOpen, menuBtnClose, modalOpen, modalClose) {
+
+            this.menuBtnOpen = menuBtnOpen;
+            this.menuBtnClose = menuBtnClose;
+            this.modalOpen = modalOpen;
+            this.modalClose = modalClose;
+
+            this.isOpen = false;
+        }
+
+        reset(btn, modal) {                             // Remove all animation classes.
+
+            btn.classList.remove(this.menuBtnClose, this.menuBtnOpen);
+            modal.classList.remove(this.modalClose, this.modalOpen);
+
+            return this;
+        }
+        
+        swClass(el, newClass, oldClass) {               // Switch animation classes.
+
+            el.classList.remove(oldClass)
+            void el.offsetWidth;                        // DOM reflow to restart animation.
+            el.classList.add(newClass)
+
+            return this;
+        }
+
+        changeState(b) { return this.isOpen = b }
+
+        open(btn, modal) {
+
+            const {menuBtnOpen, menuBtnClose, modalOpen, modalClose} = this;
+
+            return this.swClass(btn, menuBtnOpen, menuBtnClose, this.swClass(modal, modalOpen, modalClose, this.changeState(true)));
+        }
+
+        close(btn, modal) {
+            
+            const {menuBtnOpen, menuBtnClose, modalOpen, modalClose} = this;
+
+            return this.swClass(btn, menuBtnClose, menuBtnOpen, this.swClass(modal, modalClose, modalOpen, this.changeState(false)));
+        }
     }
 
-    const closeMenu = (el) => {
-        menuTransition(el, "menu-btn-open", "menu-btn-close");
-        menuTransition(modal, "modal-open", "modal-close");
-        setTimeout(() => {
-            el.classList.remove("menu-btn-close")
-            modal.classList.remove("modal-close")
-        }, 800);
-        body.classList.remove("no-scroll");
-        isOpen = false;
-    }
+    const menu = new Menu("menu-btn-open", "menu-btn-close", "modal-open", "modal-close");      // Initialise menu with animation class list.
 
 
 
@@ -88,17 +103,60 @@
 
         e.preventDefault;
 
-        if(!isOpen && !this.classList.contains("menu-btn-open") && !modal.classList.contains("modal-open")) {
+        if(!menu.isOpen) {
+
+            menu.open(this, modal);
+
             body.classList.add("no-scroll");
-            menuTransition(this, "menu-btn-close", "menu-btn-open");
-            menuTransition(modal, "modal-close", "modal-open");
+
+        } else if(menu.isOpen) {
+
+            menu.close(this, modal);
             
-            isOpen = true;
-        } else if(isOpen && this.classList.contains("menu-btn-open") && modal.classList.contains("modal-open")) {
-            closeMenu(this);
-        }
-        
+            body.classList.remove("no-scroll");
+        }   
     });
+
+    menuBtn.addEventListener("animationend", function(e) {
+    
+        e.preventDefault;   
+
+        if(!menu.isOpen) return menu.reset(this, modal);                                                // Remove animation classes once finished running.
+    });
+
+    modal.addEventListener("animationend", function(e) {
+
+        e.preventDefault;   
+
+        if(calcScreen() >= breakPoints.tabPort && !menu.isOpen) return menu.reset(menuBtn, this);       // Reset when modal closed due to resizing. This stops an invisible modal preventing use.
+    });
+
+    window.addEventListener("resize", () => {
+
+        if(calcScreen() >= breakPoints.tabPort && menu.isOpen) {
+
+            menu.close(menuBtn, modal);
+
+            body.classList.remove("no-scroll");
+
+        } else if(!menu.isOpen                                                                          // Check for classes so function doesn't run on every resize.
+                && menuBtn.classList.contains(menu.menuBtnClose, menu.menuBtnOpen) 
+                || modal.classList.contains(menu.modalClose, menu.modalOpen)) {
+
+            menu.reset(menuBtn, modal);
+
+            body.classList.remove("no-scroll");
+        }
+    });
+
+    ["resize", "load"].forEach(e => window.addEventListener(e, () => {                                   // Run functions both on load and when resized to stay responsive
+
+        responsiveHeader();
+        menuInsideModal();
+        socialInsideModal();
+
+    }));
+
 })();
 
 

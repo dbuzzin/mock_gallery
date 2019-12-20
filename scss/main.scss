@@ -578,16 +578,18 @@ main { flex-grow: 1 }
     animation: modal 0.7s 0.1s 1 both;
 
     & > * {
-        animation: menu 2s 0.1s 1 both;
+        animation: menu 1.7s 0.1s 1 both;
     }
  }
+
 .modal-close { 
     animation: modal 0.7s 0.1s 1 reverse both;
 
     & > * {
-        animation: menu 0.7s 0.1s 1 reverse both;
+        animation: menu 0.3s 0.1s 1 reverse both;
     }
  }
+ 
 .no-scroll { overflow: hidden; }
 
 
