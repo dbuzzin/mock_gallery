@@ -20,7 +20,7 @@
 
 // =========================== Colours =============================
 
-$color-bg-light2: #fcf7f0;
+$color-bg-light: #fcf7f0;
 $color-bg-dark: #140c02;
 
 $color-pri-white: #ffffff;
@@ -36,11 +36,11 @@ $padding: 3rem;
 $site-width: 102.4rem;
 
 $breakpoints: (
-    "phone": 599px, //max
-    "tab-port": 600px, //min
-    "tab-land": 900px, //min
-    "laptop ": 1200px, //min
-    "desktop": 1800px, //min
+    phone: 599px, //max
+    tab-port: 600px, //min
+    tab-land: 900px, //min
+    laptop: 1200px, //min
+    desktop: 1800px, //min
 );
 
 
@@ -53,14 +53,12 @@ $breakpoints: (
 
 @mixin respond($screen) {
 
-    $keys: map-keys($breakpoints);
-
-    @for $i from 1 to 5 {
-        @if $screen == #{nth($keys, $i)} {
-            @if $screen == phone { @media (max-width: map-get($breakpoints, $screen)){ @content };}
-            @else { @media (min-width: map-get($breakpoints, $screen)){ @content }};
+    @each $break, $size in $breakpoints {
+        @if $screen == $break {
+            @if $screen == phone { @media (max-width: $size){ @content };}
+            @else { @media (min-width: $size){ @content }};
         }
-    }
+    }  
 }
 
 // Hide content when in phone viewport
@@ -84,12 +82,16 @@ $breakpoints: (
 @keyframes top {
 
     0% { 
+
         transform: translateY(0) rotate(0);
         transform-origin: center;
         background-color: $color-pri-orange; 
     }
+
     30% { transform: translateY(1.1rem); }
+
     100% {
+
         transform: translateY(1.1rem) rotate(45deg);
         transform-origin: center;
         background-color: $color-pri-white;
@@ -106,15 +108,54 @@ $breakpoints: (
 @keyframes bottom {
 
     0% { 
+
         transform: translateY(0) rotate(0);
         transform-origin: center;
         background-color: $color-pri-orange; 
     }
+
     30% { transform: translateY(-1.1rem); }
+
     100% {
+
         transform: translateY(-1.1rem) rotate(-45deg);
         transform-origin: center;
         background-color: $color-pri-white;
+    }
+}
+
+@keyframes btn-scale {
+
+    0% {
+        transform: scale(1) translate(0, -50%);
+        transform-origin: right top; 
+    }
+
+    100% {
+
+        transform: scale(0.5) translate(1.5rem, -100%);
+        transform-origin: right top; 
+    }
+}
+
+// Navbar animation
+
+@keyframes navbar-close {
+
+    0% { height: 5rem }
+    100% { height: 0 }
+}  
+
+@keyframes remove-logo {
+
+    0% {
+        display: flex;
+        opacity: 1;
+    }
+
+    100% {
+        display:none;
+        opacity: 0;
     }
 }
 
@@ -123,10 +164,12 @@ $breakpoints: (
 @keyframes modal {
 
     0% {
+
         background-color: rgba(0, 0, 0, 0);
         z-index: 50
     }
     100% {
+         
         background-color: rgba(0, 0, 0, 0.9);
         z-index: 50
     }
@@ -144,17 +187,45 @@ $breakpoints: (
 
 // =========================== Global ==============================
 
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video, input, textarea {
+
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-family: "Montserrat", sans-serif;
+    vertical-align: baseline;
+}
+
 html {
+
     box-sizing: border-box;
     font-size: 62.5%;
 }
 
 body {
+
     min-height: 100vh;
-    background-color: $color-bg-light2;
+    background-color: $color-bg-light;
     color: $color-bg-dark;
     display: flex;
     flex-direction: column;
+
+    // @include respond(phone) {
+
+    //     margin-top: 5rem;
+    // }
 }
 
 *,
@@ -171,26 +242,6 @@ a:active {
     text-decoration: none;
 }
 
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video, input, textarea {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-family: "Montserrat", sans-serif;
-    vertical-align: baseline;
-}
-
 
 
 
@@ -203,20 +254,38 @@ time, mark, audio, video, input, textarea {
 
 .hide-phone { @include phone-hide() }
 
+// .fixed-phone {
 
+//     @include respond(phone) {
+
+//         position: fixed;
+//         top: 0; 
+//         // z-index: 25;
+//     }
+// }
 
 
 
 // ========================== Header ===============================
 
 .site-header {
+
     flex-direction: column;
+}
+
+.header-wrapper {
+
+    @include respond(phone) {
+
+        position: fixed;
+        top: 0;
+    }
 }
 
 .banner {
     height: 10rem;
     width: 100%;
-    background-color: $color-bg-light2;
+    background-color: $color-bg-light;
 
     &__inner {
         width: $site-width;
@@ -292,6 +361,7 @@ time, mark, audio, video, input, textarea {
 }
 
 .navbar {
+
     height: 5rem;
     background-color: $color-bg-dark;
     box-shadow: 0 5px 20px -10px rgba(0, 0, 0, 0.3);
@@ -303,11 +373,35 @@ time, mark, audio, video, input, textarea {
 
         @include respond(phone) {
 
+            width: 100vw;
             padding-left: 2rem;
             padding-right: 2rem;
+        }
+    }
+}
 
-            justify-content: space-between;
+.navbar-close {
 
+    @include respond(phone) {
+
+        animation: navbar-close 0.5s 0.5s both;
+
+        .navbar__inner .logo {
+
+            animation: remove-logo 0.5s both;
+        }
+    }
+}
+
+.navbar-open {
+
+    @include respond(phone) {
+
+        animation: navbar-close 0.5s reverse both;
+
+        .navbar__inner .logo {
+
+            animation: remove-logo 0.5s 0.5s reverse both;
         }
     }
 }
@@ -407,6 +501,10 @@ time, mark, audio, video, input, textarea {
 
 .menu-btn {
     
+    position: fixed;
+    top: 3rem;
+    right: 2rem;
+    transform: translateY(-50%);    
     flex-direction: column;
     justify-content: space-around;
     height: 3.4rem;
@@ -414,7 +512,6 @@ time, mark, audio, video, input, textarea {
     background-color: transparent;
     border: none;
     z-index: 100;
-    
 
     @include respond(tab-port) {
         display: none;
@@ -434,23 +531,36 @@ time, mark, audio, video, input, textarea {
 
 .menu-btn-open {
     
-    :nth-child(1) { animation: top 0.7s 0.1s 1 both ;}
-    :nth-child(2) { animation: middle 0.7s 0.1s 1 both ;}
-    :nth-child(3) { animation: bottom 0.7s 0.1s 1 both ;} 
+    :nth-child(1) { animation: top 0.7s both ;}
+    :nth-child(2) { animation: middle 0.7s both ;}
+    :nth-child(3) { animation: bottom 0.7s both ;} 
 }
 
 .menu-btn-close {
     
-    :nth-child(1) { animation: top 0.7s 0.1s 1 reverse both ;}
-    :nth-child(2) { animation: middle 0.7s 0.1s 1 reverse both ;}
-    :nth-child(3) { animation: bottom 0.7s 0.1s 1 reverse both ;} 
+    :nth-child(1) { animation: top 0.7s reverse both ;}
+    :nth-child(2) { animation: middle 0.7s reverse both ;}
+    :nth-child(3) { animation: bottom 0.7s reverse both ;} 
 }
 
-
+.menu-btn-shrink { animation: btn-scale 1s both }
+.menu-btn-grow { animation: btn-scale 0.5s reverse both }
 
 
 
 // ============================ Main ===============================
+
+main { 
+
+    flex-grow: 1; 
+    z-index: -25;
+
+    // @include respond(phone) {
+
+    //     // transform: translateY(5rem);
+    //     margin-top: 5rem;
+    // }
+}
 
 .main-wrapper {
     margin-top: 5rem;
@@ -476,7 +586,12 @@ time, mark, audio, video, input, textarea {
         background-color: $color-pri-white;
     }
 
-    @include respond(phone) { &__header, &__display { padding: 2rem } };
+    @include respond(phone) { 
+
+        transform: translateY(5rem);
+        
+        &__header, &__display { padding: 2rem } 
+    };
 }
 
 h1 { font-size: 2.3rem; }
@@ -522,8 +637,6 @@ h1 { font-size: 2.3rem; }
         }
     }
 }
-
-main { flex-grow: 1 }
 
 
 
@@ -575,18 +688,18 @@ main { flex-grow: 1 }
 }
 
 .modal-open { 
-    animation: modal 0.7s 0.1s 1 both;
+    animation: modal 0.7s both;
 
     & > * {
-        animation: menu 1.7s 0.1s 1 both;
+        animation: menu 1.7s both;
     }
  }
 
 .modal-close { 
-    animation: modal 0.7s 0.1s 1 reverse both;
+    animation: modal 0.7s reverse both;
 
     & > * {
-        animation: menu 0.3s 0.1s 1 reverse both;
+        animation: menu 0.3s reverse both;
     }
  }
  
